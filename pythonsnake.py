@@ -3,7 +3,7 @@ import random
 
 directions = []
 snakesheartbeat = []
-speed = 300
+speed = 150
 window= None
 can = None
 nomnom = None
@@ -47,7 +47,7 @@ def oob():
                 snakesheartbeat[i] = False
     
 def spawnNomNom():
-    global nomnom
+    global nomnom,mapunit,mapsize
     nomnom = Part(random.randint(mapunit, int(mapsize/mapunit))*mapunit - mapunit,random.randint(mapunit, int(mapsize/mapunit))*mapunit - mapunit)
 
 def draw():
@@ -105,7 +105,7 @@ class Snake:
     parts  = None
     snakelenght = 0
     
-    def _init_(self):
+    def __init__(self):
         self.parts = []
         self.createBaseSnake()
     
@@ -137,7 +137,7 @@ class Snake:
         self.parts.append(Part(self.parts[self.snakelenght-1].x, self.parts[self.snakelenght-1].y))
 
 class Part:
-    def _init_(self, x, y):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
         
