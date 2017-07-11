@@ -44,7 +44,7 @@ def oob():
     
 def spawnNomNom():
     global nomnom
-    nomnom = Part(random.randint(0, int(mapsize/mapunit))*mapunit-mapunit,random.randint(0, int(mapsize/mapunit))*mapunit-mapunit)
+    nomnom = Part(random.randint(mapunit, int(mapsize/mapunit))*mapunit - mapunit,random.randint(mapunit, int(mapsize/mapunit))*mapunit - mapunit)
 
 def draw():
     global snakes,can,mapunit,margin,nomnom
@@ -174,10 +174,7 @@ def setDirLeft(e):
 
 def setDirRight(e):
     if directions[0] != 4:
-        directions[0] = 2
-        
-    if started == False:
-        calculatenextcoord()    
+        directions[0] = 2  
         
 def initGame():
     global snakes,snakesheartbeat,started,nomnom,directions
