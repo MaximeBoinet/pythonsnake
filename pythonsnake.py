@@ -3,7 +3,7 @@ import random
 
 directions = []
 snakesheartbeat = []
-speed = 100
+speed = 300
 window= None
 can = None
 nomnom = None
@@ -14,6 +14,7 @@ margin = 2
 started = False
 foodf = "red"
 f_s1 = "green"
+f_s2 = "yellow"
 outl = "black"
 
 def gameOver():
@@ -25,22 +26,25 @@ def snekAccident():
     global snakes, snakesheartbeat
     heads = []
     
-    for dangernoodle in snakes:
-        heads.append(dangernoodle.getHead())
+    for l, dangernoodle in enumerate(snakes):
+        if snakesheartbeat[l]:
+            heads.append(dangernoodle.getHead())
         
     for i, snek in enumerate(snakes):
-        for j, part in enumerate(snek.parts[1:]):
-            for k, head in enumerate(heads):
-                if head.sameCoord(part):
-                    snakesheartbeat[k] = False
+        if snakesheartbeat[i]:
+            for j, part in enumerate(snek.parts[1:]):
+                for k, head in enumerate(heads):
+                    if head.sameCoord(part):
+                        snakesheartbeat[i] = False
 
 def oob():
     global snakes,mapsize,mapunit
     
     for i, snek in enumerate(snakes):
-        head = snek.getHead()
-        if head.x < 0 or head.x > mapsize-(mapunit-1) or head.y < 0 or head.y > mapsize-(mapunit-1):
-            snakesheartbeat[i] = False
+        if snakesheartbeat[i]:
+            head = snek.getHead()
+            if head.x < 0 or head.x > mapsize-(mapunit-1) or head.y < 0 or head.y > mapsize-(mapunit-1):
+                snakesheartbeat[i] = False
     
 def spawnNomNom():
     global nomnom
@@ -52,8 +56,9 @@ def draw():
     
     for i, snek in enumerate(snakes):
         for part in snek.parts:
-            can.coords(can.create_oval( margin, margin, mapunit - 2*margin, mapunit - 2*margin,  fill=f_s1, outline=outl),
-                       part.x,part.y,part.x+mapunit,part.y+mapunit)
+            if snakesheartbeat[i]:
+                can.coords(can.create_oval( margin, margin, mapunit - 2*margin, mapunit - 2*margin,  fill=(f_s1 if (i == 0) else f_s2), outline=outl),
+                           part.x,part.y,part.x+mapunit,part.y+mapunit)
             
     can.coords(can.create_oval( margin, margin, mapunit - 2*margin, mapunit - 2*margin,  fill=foodf, outline=outl),
                nomnom.x,nomnom.y,nomnom.x+mapunit,nomnom.y+mapunit)  
@@ -66,22 +71,24 @@ def calculatenextcoord():
     started = True
     
     for i, snek in enumerate(snakes):
-        snek.avancer(i)
-        
-        if snek.getHead().sameCoord(nomnom):
-            snek.nomnom()
-            spawnNomNom()
-         
-        snekAccident()
-        oob()
+        if snakesheartbeat[i]:
+            snek.avancer(i)
+            if snek.getHead().sameCoord(nomnom):
+                snek.nomnom()
+                spawnNomNom()
+    
+    snekAccident()
+    oob()
     alive = False 
     
     for j, beat in enumerate(snakesheartbeat):
         if beat:
             alive = beat
+            print(snakesheartbeat)
+            print("ok" + str(j))
         else:
-            del snakes[j]
-    
+            snakesheartbeat[j] = False
+        
     if not alive:
         gameOver()
     else:
@@ -98,7 +105,7 @@ class Snake:
     parts  = None
     snakelenght = 0
     
-    def __init__(self):
+    def _init_(self):
         self.parts = []
         self.createBaseSnake()
     
@@ -130,7 +137,7 @@ class Snake:
         self.parts.append(Part(self.parts[self.snakelenght-1].x, self.parts[self.snakelenght-1].y))
 
 class Part:
-    def __init__(self, x, y):
+    def _init_(self, x, y):
         self.x = x
         self.y = y
         
@@ -175,6 +182,20 @@ def setDirLeft(e):
 def setDirRight(e):
     if directions[0] != 4:
         directions[0] = 2  
+
+def setDirSec(e):
+    if len(directions) == 1:
+        addSnake()
+        directions.append(0)
+        
+    if e.char == 'z':
+        directions[1] = 1
+    if e.char == 's':
+        directions[1] = 3
+    if e.char == 'q':
+        directions[1] = 4
+    if e.char == 'd':
+        directions[1] = 2
         
 def initGame():
     global snakes,snakesheartbeat,started,nomnom,directions
@@ -197,6 +218,7 @@ def init():
     window.bind("<Down>", setDirDown)
     window.bind("<Left>", setDirLeft)
     window.bind("<Right>", setDirRight)
+    window.bind("<Key>", setDirSec)   
     initGame()
     window.mainloop()
     
