@@ -190,9 +190,9 @@ def setDirSec(e):
         
     if e.char == 'z' and directions[1] != 3:
         directions[1] = 1
-    if e.char == 's' and directions[1] != 2:
+    if e.char == 's' and directions[1] != 1:
         directions[1] = 3
-    if e.char == 'q' and directions[1] != 1:
+    if e.char == 'q' and directions[1] != 2:
         directions[1] = 4
     if e.char == 'd' and directions[1] != 4:
         directions[1] = 2
